@@ -42,7 +42,7 @@ export class LoginComponent {
     let id: string = Math.floor(Math.random() * 1000).toString();
     let options: ChannelOptions = {
       teamCount: 2,
-      maxSeconds: 60
+      maxSeconds: 600
     }
 
     this.channel = this.loginService.createChannel(id, options);
