@@ -1,5 +1,14 @@
-<button (click)="mouseClick($event)">Test</button>
+<!--<button (click)="mouseClick($event)">Test</button>
 
 <button (click)="init($event)">INIT</button>
 
-<button type="button" class="btn btn-primary" (click)="publish()">Publish</button>
+<button type="button" class="btn btn-primary" (click)="publish()">Publish</button>*-->
+
+<div class="border border-primary h-100 d-flex justify-content-center align-items-center m-3" 
+[ngStyle]="{'background-color': color}"
+(click)="mouseClick($event)">
+    <div class="d-flex flex-column gap-2">
+        <h2 class="m-0 text-center">Team A</h2>
+        <h1 class="m-0 text-center fw-bolder">{{time | timerFormat}}</h1>
+    </div>
+</div>

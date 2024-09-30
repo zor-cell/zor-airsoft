@@ -1,39 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TimerService } from '../../services/timer.service';
 import { Types } from 'ably';
 import { ToastrService } from 'ngx-toastr';
+import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-timer',
   templateUrl: './timer.component.html',
   styleUrl: './timer.component.css'
 })
-export class TimerComponent {
+export class TimerComponent implements OnInit {
   private channel: Types.RealtimeChannelPromise | null = null;
 
-  constructor(private toastr: ToastrService, private timerService: TimerService) {}
+  isRunning: boolean = false;
+  interval: NodeJS.Timeout | null = null;
+  time: number = 0;
+  color: string = "#0000ff55";
 
-  mouseClick(event: any) {
-    console.log("request sent");
-    this.timerService.getAllMessages().subscribe({
-      next: result => {
-        console.log(result);
-      }
-    });
-  }
+  constructor(private toastr: ToastrService, private loginService: LoginService) {}
 
-  init(event: any) {
-    this.channel = this.timerService.init();
-
-    this.channel.subscribe((msg: Types.Message) => {
-      console.log("Ably message received", msg);
-    });
-    this.toastr.success(`Connected to channel ${this.channel.name}`);    
+  ngOnInit(): void {
+    //this.loginService.createChannel().subscribe()
   }
 
   publish() {
     if(!this.channel) return;
 
     this.channel.publish("hello-world-message", { message: "Hello world!" });
+  }
+
+  mouseClick(event: any) {
+    console.log(event)
+
+    this.isRunning = !this.isRunning;
+
+    if(this.isRunning) {
+      this.color = "#0000ffbb";
+      this.interval = setInterval(() => {
+          this.time++;
+      }, 1000);
+    } else {
+      if(this.interval) {
+        this.color = "#0000ff55";
+        clearInterval(this.interval);
+      }
+    }
   }
 }

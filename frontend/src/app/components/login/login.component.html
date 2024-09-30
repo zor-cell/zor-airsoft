@@ -1,1 +1,8 @@
-<p>login works!</p>
+<div class="mt-5 d-flex justify-content-center align-items-center flex-column gap-1">
+    <div class="d-flex flex-row gap-1">
+        <input type="text" placeholder="Channel ID" [(ngModel)]="joinChannelId">
+        <button class="btn btn-secondary" (click)="joinChannel()">Join</button>
+    </div>
+    <p class="m-0 text-center">OR</p>
+    <div><button class="btn btn-primary" (click)="createChannel()">Create Channel</button></div>
+</div>

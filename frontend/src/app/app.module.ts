@@ -8,13 +8,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { LoginComponent } from './components/login/login.component'
+import { LoginComponent } from './components/login/login.component';
+import { ChannelComponent } from './components/channel/channel.component'
+import { FormsModule } from '@angular/forms';
+import { TimerFormatPipe } from './pipes/timer-format.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     TimerComponent,
-    LoginComponent
+    LoginComponent,
+    ChannelComponent,
+    TimerFormatPipe
   ],
   imports: [
     BrowserModule,
@@ -22,7 +27,8 @@ import { LoginComponent } from './components/login/login.component'
     NgbModule,
     AppRoutingModule,
     HttpClientModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
