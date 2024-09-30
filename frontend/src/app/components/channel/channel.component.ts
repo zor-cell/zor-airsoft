@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChannelOptions } from '../../classes/channelOptions';
+import { TimerComponent } from '../timer/timer.component';
 
 @Component({
   selector: 'app-channel',
@@ -9,6 +10,8 @@ import { ChannelOptions } from '../../classes/channelOptions';
 })
 export class ChannelComponent implements OnInit {
   readonly colors: string[] = ['rgba(200, 0, 0)', 'rgba(0, 200, 0)', 'rgba(0, 0, 240)'];
+
+  @ViewChildren(TimerComponent) timers!: QueryList<TimerComponent>;
 
   channelId: string = "";
   options!: ChannelOptions;
@@ -29,6 +32,9 @@ export class ChannelComponent implements OnInit {
   }
 
   runningEvent(teamId: number) {
-    console.log(teamId);
+    let stoppingTimers = this.timers.filter((x, i) => i != teamId);
+    for(let stoppingTimer of stoppingTimers) {
+      stoppingTimer.isRunning = false;
+    }
   }
 }

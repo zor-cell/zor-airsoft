@@ -12,13 +12,21 @@ import { ChannelOptions } from '../../classes/channelOptions';
 })
 export class TimerComponent implements OnInit {
   private channel: Types.RealtimeChannelPromise | null = null;
+  private _isRunning: boolean = false;
+
+  @Input() set isRunning(value: boolean) {
+    this._isRunning = value;
+    this.manageInterval();
+  }
+  get isRunning(): boolean {
+    return this._isRunning;
+  }
 
   @Input() teamId!: number;
   @Input() options!: ChannelOptions;
   @Input() color!: string;
-  @Input() isRunning: boolean = false;
   @Output() runningEvent = new EventEmitter<number>();
-  
+
   interval: NodeJS.Timeout | null = null;
   secondsPassed: number = 0;
 
@@ -35,19 +43,18 @@ export class TimerComponent implements OnInit {
   }
 
   mouseClick(event: any) {
-    //console.log(event)
-
-    this.isRunning = true;
     this.runningEvent.emit(this.teamId);
-
-    //init interval when timer is running and it hasnt started yet
-    this.manageInterval();
+    this.isRunning = true;
   }
 
   manageInterval() {
+    //console.log(this.teamId, this.isRunning, this.interval);
     //delete interval if timer is stopped and interval exists
-    if(!this.isRunning && this.interval) {
-      clearInterval(this.interval);
+    if(!this.isRunning) {
+      if(this.interval != null) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
       return;
     }
 
