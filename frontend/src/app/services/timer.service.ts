@@ -18,19 +18,11 @@ export class TimerService {
   }
 
  init() {
-      const optionalClientId = "optionalClientId"; 
-      // When not provided in authUrl, a default will be used.
-      const connection = new Ably.Realtime.Promise({ authUrl: `/.netlify/functions/ably-token-request?clientId=${optionalClientId}` });
-      const channel: Types.RealtimeChannelPromise = connection.channels.get("some-channel-name");
+    const optionalClientId = "optionalClientId"; 
+    // When not provided in authUrl, a default will be used.
+    const connection: Types.RealtimePromise = new Ably.Realtime.Promise({ authUrl: `/.netlify/functions/ably-token-request?clientId=${optionalClientId}` });
+    const channel: Types.RealtimeChannelPromise = connection.channels.get("some-channel-name");
   
     return channel;
-
-      /*await channel.subscribe((msg: Types.Message) => {
-          console.log("Ably message received", msg);
-          //document.getElementById("response")!.innerHTML += "<br />" + JSON.stringify(msg);
-      });
-  
-      
-      channel.publish("hello-world-message", { message: "Hello world!" });*/
   }
 }

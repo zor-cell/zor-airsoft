@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { TimerService } from '../../services/timer.service';
 import { Types } from 'ably';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-timer',
@@ -10,7 +11,7 @@ import { Types } from 'ably';
 export class TimerComponent {
   private channel: Types.RealtimeChannelPromise | null = null;
 
-  constructor(private timerService: TimerService) {}
+  constructor(private toastr: ToastrService, private timerService: TimerService) {}
 
   mouseClick(event: any) {
     console.log("request sent");
@@ -24,10 +25,10 @@ export class TimerComponent {
   init(event: any) {
     this.channel = this.timerService.init();
 
-    console.log(`Subscribing to channel ${this.channel.name}`);
     this.channel.subscribe((msg: Types.Message) => {
       console.log("Ably message received", msg);
     });
+    this.toastr.success(`Connected to channel ${this.channel.name}`);    
   }
 
   publish() {
