@@ -22,6 +22,7 @@ export class TimerComponent implements OnInit {
     return this._isRunning;
   }
 
+  @Input() channelId!: string;
   @Input() teamId!: number;
   @Input() options!: ChannelOptions;
   @Input() color!: string;
@@ -32,23 +33,13 @@ export class TimerComponent implements OnInit {
 
   constructor(private toastr: ToastrService, private loginService: LoginService) {}
 
-  ngOnInit(): void {
-    //this.loginService.createChannel().subscribe()
-  }
-
-  publish() {
-    if(!this.channel) return;
-
-    this.channel.publish("hello-world-message", { message: "Hello world!" });
-  }
+  ngOnInit(): void {}
 
   mouseClick(event: any) {
     this.runningEvent.emit(this.teamId);
-    this.isRunning = true;
   }
 
   manageInterval() {
-    //console.log(this.teamId, this.isRunning, this.interval);
     //delete interval if timer is stopped and interval exists
     if(!this.isRunning) {
       if(this.interval != null) {

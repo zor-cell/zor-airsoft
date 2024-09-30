@@ -20,9 +20,9 @@ export class LoginComponent {
 
   joinChannel() {
     this.channel = this.loginService.getChannel(this.joinChannelId);
-    this.channel.subscribe((msg: Types.Message) => {
+    /*this.channel.subscribe((msg: Types.Message) => {
       console.log("Ably message received", msg);
-    });
+    });*/
 
     //check if the host has posted presence data
     //only then can the use join the channel
@@ -46,9 +46,9 @@ export class LoginComponent {
     }
 
     this.channel = this.loginService.createChannel(id, options);
-    this.channel.subscribe((msg: Types.Message) => {
+    /*this.channel.subscribe((msg: Types.Message) => {
       console.log("Ably message received", msg);
-    });
+    });*/
 
     this.router.navigate(['/channels/', id], {queryParams: options});
     this.toastr.success(`Created channel ${this.channel.name}`);
