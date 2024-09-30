@@ -21,7 +21,7 @@
     "@netlify/functions": "^2.8.2",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0-rc.2",
     "@types/node": "^14.0.0",
-    "ably": "^2.4.0",
+    "ably": "^1.2.29",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "dotenv": "^16.0.1",
