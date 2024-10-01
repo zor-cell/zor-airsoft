@@ -12,7 +12,6 @@ import { LoginComponent } from './components/login/login.component';
 import { ChannelComponent } from './components/channel/channel.component'
 import { FormsModule } from '@angular/forms';
 import { TimerFormatPipe } from './pipes/timer-format.pipe';
-import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -20,8 +19,7 @@ import { SettingsComponent } from './components/settings/settings.component';
     TimerComponent,
     LoginComponent,
     ChannelComponent,
-    TimerFormatPipe,
-    SettingsComponent
+    TimerFormatPipe
   ],
   imports: [
     BrowserModule,

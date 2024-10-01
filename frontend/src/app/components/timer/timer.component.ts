@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TimerService } from '../../services/timer.service';
 import { Types } from 'ably';
 import { ToastrService } from 'ngx-toastr';
 import { LoginService } from '../../services/login.service';

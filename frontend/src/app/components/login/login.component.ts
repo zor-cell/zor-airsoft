@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { ChannelOptions } from '../../classes/channelOptions';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SettingsComponent } from '../settings/settings.component';
 import { catchError, of } from 'rxjs';
 
 @Component({

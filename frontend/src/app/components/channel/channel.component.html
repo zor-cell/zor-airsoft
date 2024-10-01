@@ -1,13 +1,13 @@
 <p class="text-center fw-bold fs-4">Channel {{ channelId }}</p>
 
-<div class="d-flex justify-content-center gap-3" style="height: 500px;">
+<div class="d-flex flex-wrap" style="height: 500px;">
     <app-timer 
+    class="col-6"
     *ngFor="let item of [].constructor(options.teamCount); let i = index;"
     [teamId]="i"
     [options]="options" 
-    [color]="colors[i]" 
+    [color]="colors[i % colors.length]" 
     [isRunning]="false"
-    (runningEvent)="updateActiveTimerEvent($event)"
-    style="flex: 0 0 50%">
+    (runningEvent)="updateActiveTimerEvent($event)">
     </app-timer>
 </div>
