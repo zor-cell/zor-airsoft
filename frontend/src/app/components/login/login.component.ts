@@ -16,7 +16,7 @@ export class LoginComponent {
   joinChannelId: string = "";
   channelOptions: ChannelOptions = {
     teamCount: 2, 
-    maxSeconds: 500
+    maxSeconds: 30
   };
 
   constructor(private toastr: ToastrService, 

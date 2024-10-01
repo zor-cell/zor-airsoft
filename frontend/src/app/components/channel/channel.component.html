@@ -4,14 +4,22 @@
         <app-timer 
         class="col-6"
         *ngFor="let item of [].constructor(options.teamCount); let i = index;"
-        [teamId]="i"
+        [timerId]="i"
         [options]="options" 
         [color]="colors[i % colors.length]" 
         [isRunning]="false"
-        (runningEvent)="updateActiveTimerEvent($event)">
+        (activeTimerEvent)="updateActiveTimerEvent($event)">
         </app-timer>
     </div>
-    <div class="border border-primary" style="height: 50px">
-
+    <div class="border border-primary d-flex flex-wrap" style="height: 50px; background-color: lightgray;">
+        <app-total-timer 
+        class="col-6"
+        *ngFor="let item of [].constructor(options.teamCount); let i = index;"
+        [totalTimerId]="i"
+        [color]="colors[i % colors.length]"
+        [maxSeconds]="options.maxSeconds">
+        </app-total-timer>
     </div>
+
+    <p>{{options.maxSeconds}}</p>
 </div>

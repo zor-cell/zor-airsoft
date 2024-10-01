@@ -10,7 +10,6 @@ import { ChannelOptions } from '../../classes/channelOptions';
   styleUrl: './timer.component.css'
 })
 export class TimerComponent implements OnInit {
-  private channel: Types.RealtimeChannelPromise | null = null;
   private _isRunning: boolean = false;
 
   @Input() set isRunning(value: boolean) {
@@ -21,21 +20,20 @@ export class TimerComponent implements OnInit {
     return this._isRunning;
   }
 
-  @Input() channelId!: string;
-  @Input() teamId!: number;
+  @Input() timerId!: number;
   @Input() options!: ChannelOptions;
   @Input() color!: string;
-  @Output() runningEvent = new EventEmitter<number>();
+  @Output() activeTimerEvent = new EventEmitter<number>();
 
   interval: NodeJS.Timeout | null = null;
   secondsPassed: number = 0;
 
-  constructor(private toastr: ToastrService, private loginService: LoginService) {}
+  constructor(private toastr: ToastrService) {}
 
   ngOnInit(): void {}
 
   mouseClick(event: any) {
-    this.runningEvent.emit(this.teamId);
+    this.activeTimerEvent.emit(this.timerId);
   }
 
   manageInterval() {
