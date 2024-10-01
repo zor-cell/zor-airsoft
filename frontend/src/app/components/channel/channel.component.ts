@@ -34,7 +34,6 @@ export class ChannelComponent implements OnInit {
     });
 
     this.channel = this.loginService.getChannel(this.channelId);
-    console.log(this.channel)
     this.channel.subscribe((msg : Types.Message) => {
       this.handleMessage(msg);
     });

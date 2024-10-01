@@ -4,5 +4,31 @@
         <button class="btn btn-secondary" (click)="joinChannel()">Join</button>
     </div>
     <p class="m-0 text-center">OR</p>
-    <div><button class="btn btn-primary" (click)="createChannel()">Create Channel</button></div>
+    <div><button class="btn btn-primary" (click)="openSettingsModal(settingsModal)">Create Channel</button></div>
 </div>
+
+
+<ng-template #settingsModal let-modal>
+    <div class="modal-header">
+        <h4>Channel Settings</h4>
+    </div>
+
+    <form #settingsForm="ngForm" (ngSubmit)="modal.close();createChannel()">
+        <div class="modal-body d-flex flex-column gap-2">
+            <div class="form-group">
+                <label for="teamCount">Number of teams</label>
+                <input class="form-control" id="teamCount" name="teamCount" type="number" required [(ngModel)]="channelOptions.teamCount">
+            </div>
+
+            <div class="form-group">
+                <label for="maxSeconds">Second Limit</label>
+                <input class="form-control" id="maxSeconds" name="maxSeconds" type="number" required [(ngModel)]="channelOptions.maxSeconds">
+            </div>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between">
+            <button class="btn btn-danger" type="button" (click)="modal.close()">Close</button>
+            <button class="btn btn-success" type="submit">Create Channel</button>
+        </div>
+    </form>
+</ng-template>

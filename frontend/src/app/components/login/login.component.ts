@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, TemplateRef } from '@angular/core';
 import { Types } from 'ably';
 import { LoginService } from '../../services/login.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { ChannelOptions } from '../../classes/channelOptions';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { SettingsComponent } from '../settings/settings.component';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -12,45 +15,48 @@ import { ChannelOptions } from '../../classes/channelOptions';
 })
 export class LoginComponent {
   joinChannelId: string = "";
-  channel: Types.RealtimeChannelPromise | null = null;
+  channelOptions: ChannelOptions = {
+    teamCount: 2, 
+    maxSeconds: 500
+  };
 
   constructor(private toastr: ToastrService, 
+    private modalService: NgbModal,
     private loginService: LoginService,
     private router: Router) {}
 
   joinChannel() {
-    this.channel = this.loginService.getChannel(this.joinChannelId);
-    /*this.channel.subscribe((msg: Types.Message) => {
-      console.log("Ably message received", msg);
-    });*/
+    if(this.joinChannelId === '') {
+      this.toastr.error(`Channel ID cannot be empty`);
+      return;
+    }
+
+    let channel = this.loginService.getChannel(this.joinChannelId);
 
     //check if the host has posted presence data
-    //only then can the use join the channel
-    this.channel.presence.subscribe(presence => {
-      console.log(presence.data)
-      /*if(presence.data === undefined) {
-        this.toastr.error(`Could not join channel ${this.channel!.name}`);
-        return;
-      }*/
+    channel.presence.get()
+    .then(messages => {
+      let hostMessage = messages.find(x => x.clientId === 'host');
 
-      this.router.navigate(['/channels/', this.joinChannelId], {queryParams: presence.data});
-      this.toastr.success(`Joined channel ${this.channel!.name}`);
+      if(hostMessage === undefined) {
+        this.toastr.error(`Could not join channel ${channel.name}`);
+      } else {
+        this.router.navigate(['/channels/', this.joinChannelId], {queryParams: hostMessage.data});
+        this.toastr.success(`Joined channel ${channel.name}`);
+      }
     });
   }
 
   createChannel() {
     let id: string = Math.floor(Math.random() * 1000).toString();
-    let options: ChannelOptions = {
-      teamCount: 2,
-      maxSeconds: 600
-    }
 
-    this.channel = this.loginService.createChannel(id, options);
-    /*this.channel.subscribe((msg: Types.Message) => {
-      console.log("Ably message received", msg);
-    });*/
+    let channel = this.loginService.createChannel(id, this.channelOptions);
 
-    this.router.navigate(['/channels/', id], {queryParams: options});
-    this.toastr.success(`Created channel ${this.channel.name}`);
+    this.router.navigate(['/channels/', id], {queryParams: this.channelOptions});
+    this.toastr.success(`Created channel ${channel.name}`);
+  }
+
+  openSettingsModal(modal: TemplateRef<NgbModal>) {
+    this.modalService.open(modal);
   }
 }
