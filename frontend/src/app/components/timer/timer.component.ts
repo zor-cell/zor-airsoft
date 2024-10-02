@@ -10,8 +10,8 @@ import { ChannelOptions } from '../../classes/channelOptions';
   styleUrl: './timer.component.css'
 })
 export class TimerComponent implements OnInit {
+  //is running
   private _isRunning: boolean = false;
-
   @Input() set isRunning(value: boolean) {
     this._isRunning = value;
     this.manageInterval();
@@ -20,9 +20,25 @@ export class TimerComponent implements OnInit {
     return this._isRunning;
   }
 
+  //color
+  private _color: string = 'rgba(0, 0, 0, 0)';
+  @Input() set color(value: string) {
+    this._color = value;
+  }
+  get color(): string {
+    if(!this.isRunning) {
+      const rgbaMatch = this._color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+      if (rgbaMatch) {
+        const [_, r, g, b] = rgbaMatch;
+        return `rgba(${r}, ${g}, ${b}, ${0.7})`;
+      }
+    }
+
+    return this._color;
+  }
+
   @Input() timerId!: number;
   @Input() options!: ChannelOptions;
-  @Input() color!: string;
   @Output() activeTimerEvent = new EventEmitter<number>();
 
   interval: NodeJS.Timeout | null = null;

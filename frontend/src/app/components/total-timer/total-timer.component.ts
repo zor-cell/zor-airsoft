@@ -9,8 +9,23 @@ export class TotalTimerComponent {
   //the percentage of the timer bar that is always shown
   readonly offset: number = 10;
 
+  private _color: string = 'rgba(0, 0, 0, 0)';
+  @Input() set color(value: string) {
+    this._color = value;
+  }
+  get color(): string {
+    if(this.increment === 0) {
+      const rgbaMatch = this._color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+      if (rgbaMatch) {
+        const [_, r, g, b] = rgbaMatch;
+        return `rgba(${r}, ${g}, ${b}, ${0.7})`;
+      }
+    }
+
+    return this._color;
+  }
+
   @Input() totalTimerId!: number;
-  @Input() color!: string;
   @Input() maxSeconds!: number;
   @Output() timerFullEvent = new EventEmitter<number>;
 

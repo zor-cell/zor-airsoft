@@ -28,6 +28,8 @@
 
     <div *ngIf="winnerTeamId != null">
         <h4 class="text-center">Game Over!</h4>
-        <p class="text-center">Team {{winnerTeamId + 1}} won!</p>
+        <p class="text-center">
+            <span class="fw-bold" [ngStyle]="{'color': colors[winnerTeamId % colors.length] || 'black'}">Team {{winnerTeamId + 1}}</span> won!
+        </p>
     </div>
 </div>

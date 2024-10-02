@@ -13,7 +13,7 @@ import { TotalTimerComponent } from '../total-timer/total-timer.component';
 })
 export class ChannelComponent implements OnInit {
   //the available team colors
-  readonly colors: string[] = ['rgba(225, 25, 25)', 'rgba(50, 150, 255)', 'rgba(150, 200, 0)', 'rgba(250, 100, 0)'];
+  readonly colors: string[] = ['rgba(225, 25, 25, 1)', 'rgba(50, 150, 255, 1)', 'rgba(150, 200, 0, 1)', 'rgba(250, 100, 0, 1)'];
   //the channel to be handled
   private channel: Types.RealtimeChannelPromise | null = null;
 
@@ -30,6 +30,9 @@ export class ChannelComponent implements OnInit {
   //the handled channels channel options
   options!: ChannelOptions;
   winnerTeamId: number | null = null;
+
+  //the time that was active before the current active one on this client
+  prevTimerId: number | null = null;
 
   constructor(private route: ActivatedRoute, 
     private cdr: ChangeDetectorRef, 
@@ -59,13 +62,15 @@ export class ChannelComponent implements OnInit {
     //this gets executed on all clients
     if(msg.name === 'start-timer') {
       let timerId: number = msg.data.timerId!;
-      let firstUpdate: boolean = msg.data.firstUpdate!;
+      let prevTimerId: number | null = msg.data.prevTimerId;
       
       //manage total timers on all clients
-      let currentTotalTimer = this.totalTimers.get(timerId);
-      currentTotalTimer!.increment++;
-      if(!firstUpdate) {
-        this.totalTimers.filter((x, i) => i != timerId).forEach(timer => timer.increment = (timer.increment <= 0 ? 0 : timer.increment - 1));
+      let currentTotalTimer = this.totalTimers.get(timerId)!;
+      currentTotalTimer.increment++;
+      
+      if(prevTimerId != null) {
+        let prevTotalTimer = this.totalTimers.get(prevTimerId)!;
+        prevTotalTimer.increment--;
       }
 
       if(!this.totalTimerInterval) {
@@ -96,9 +101,6 @@ export class ChannelComponent implements OnInit {
         inactiveTimer.isRunning = false;
       }
 
-      //if all timers are on 0 (ie this is the first timer press)
-      let firstUpdate: boolean = this.localTimers.filter(timer => timer.secondsPassed > 0).length === 0;
-
       //start clients timer that has been started
       activeTimer!.isRunning = true;
 
@@ -106,8 +108,10 @@ export class ChannelComponent implements OnInit {
       if(!this.channel) return;
       this.channel.publish('start-timer', { 
         timerId: timerId,
-        firstUpdate: firstUpdate
+        prevTimerId: this.prevTimerId,
       });
+
+      this.prevTimerId = timerId;
     }
   }
 
