@@ -1,0 +1,7 @@
+.animated-width {
+    /*transition: width 1s linear;*/
+}
+
+.center-vertical {
+    transform: translateY(-50%);
+}

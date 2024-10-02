@@ -11,15 +11,23 @@ import { TotalTimerComponent } from '../total-timer/total-timer.component';
   templateUrl: './channel.component.html',
   styleUrl: './channel.component.css'
 })
-export class ChannelComponent implements OnInit, AfterViewInit {
-  readonly colors: string[] = ['rgba(200, 0, 0)', 'rgba(0, 200, 0)', 'rgba(0, 0, 240)'];
+export class ChannelComponent implements OnInit {
+  //the available team colors
+  readonly colors: string[] = ['rgba(225, 25, 25)', 'rgba(50, 150, 255)', 'rgba(150, 200, 0)', 'rgba(250, 100, 0)'];
+  //the channel to be handled
   private channel: Types.RealtimeChannelPromise | null = null;
 
-  @ViewChildren(TimerComponent) timers!: QueryList<TimerComponent>;
+  //all simple timer components (local timer for a team)
+  @ViewChildren(TimerComponent) localTimers!: QueryList<TimerComponent>;
+  //all total timer components (timer bars accumulating all times of a team)
   @ViewChildren(TotalTimerComponent) totalTimers!: QueryList<TotalTimerComponent>;
+
+  //the repeating time interval to update all total timers on all clients
   totalTimerInterval: NodeJS.Timeout | null = null;
 
+  //the handled channels channel id
   channelId: string = "";
+  //the handled channels channel options
   options!: ChannelOptions;
 
   constructor(private route: ActivatedRoute, private loginService: LoginService) {}
@@ -38,45 +46,37 @@ export class ChannelComponent implements OnInit, AfterViewInit {
 
     this.channel = this.loginService.getChannel(this.channelId);
     this.channel.subscribe((msg : Types.Message) => {
-      this.handleMessage(msg);
+      this.handleBroadcastMessage(msg);
     });
   }
 
-  ngAfterViewInit(): void {
-    //this.timerSums = Array<number>(this.timers.length).fill(0);
-    //this.timerIntervals = Array<NodeJS.Timeout>(this.timers.length);
-  }
-
-  updateActiveTimerEvent(timerId: number) {
-    //CLIENT HANDLING
+  startTimerEvent(timerId: number) {
     //stop all inactive timers of the client where it was activated
-    let inactiveTimers = this.timers.filter((x, i) => i != timerId);
+    let inactiveTimers = this.localTimers.filter((x, i) => i != timerId);
     for(let inactiveTimer of inactiveTimers) {
       inactiveTimer.isRunning = false;
     }
 
-    //start the active timer of the client
-    let activeTimer = this.timers.get(timerId);
-    activeTimer!.isRunning = true;
+    let activeTimer = this.localTimers.get(timerId);
 
+    //start the clients timer if it is not running
+    if(activeTimer!.isRunning === false) {
+      activeTimer!.isRunning = true;
 
-  
-    //SERVER HANDLING
-    //send a message to the server to update all clients
-    if(!this.channel) return;
-    this.channel.publish('start-timer', { 
-      timerId: timerId,
-      secondsPassed: activeTimer!.secondsPassed
-    });
+      //broadcast a message to the server to update all clients
+      if(!this.channel) return;
+      this.channel.publish('start-timer', { 
+        timerId: timerId,
+        secondsPassed: activeTimer!.secondsPassed
+      });
+    }
   }
 
-  handleMessage(msg: Types.Message) {
+  handleBroadcastMessage(msg: Types.Message) {
     if(msg.name === 'start-timer') {
       let timerId: number = msg.data.timerId!;
       let secondsPassed: number = msg.data.secondsPassed!;
       
-      console.log(this.totalTimers)
-
       let currentTotalTimer = this.totalTimers.get(timerId);
       currentTotalTimer!.increment++;
 
@@ -96,9 +96,21 @@ export class ChannelComponent implements OnInit, AfterViewInit {
       }, 1000);
       this.timerIntervals[activeTimerId] = interval;*/
     } else if(msg.name === 'game-over') {
-
+      let timerId: number = msg.data.fullTimerId;
+      
+      console.log(timerId);
     } else if(msg.name === '') {
       
+    }
+  }
+
+  timerFullEvent(totalTimerId: number) {
+    if(this.totalTimerInterval) clearInterval(this.totalTimerInterval);
+
+    if(this.channel) {
+      this.channel.publish('game-over', {
+        fullTimerId: totalTimerId
+      });
     }
   }
 }

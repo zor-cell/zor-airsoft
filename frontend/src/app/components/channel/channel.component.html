@@ -1,5 +1,5 @@
 <div class="d-flex flex-column gap-3">
-    <p class="text-center m-0 fw-bold fs-4">Channel {{ channelId }}</p>
+    <h3 class="text-center m-0 fw-bold">Channel {{ channelId }}</h3>
     <div class="d-flex flex-wrap" style="height: 500px;">
         <app-timer 
         class="col-6"
@@ -8,18 +8,21 @@
         [options]="options" 
         [color]="colors[i % colors.length]" 
         [isRunning]="false"
-        (activeTimerEvent)="updateActiveTimerEvent($event)">
+        (activeTimerEvent)="startTimerEvent($event)">
         </app-timer>
     </div>
-    <div class="border border-primary d-flex flex-wrap" style="height: 50px; background-color: lightgray;">
-        <app-total-timer 
-        class="col-6"
-        *ngFor="let item of [].constructor(options.teamCount); let i = index;"
-        [totalTimerId]="i"
-        [color]="colors[i % colors.length]"
-        [maxSeconds]="options.maxSeconds">
-        </app-total-timer>
-    </div>
 
-    <p>{{options.maxSeconds}}</p>
+    <div class="d-flex flex-column gap-1">
+        <h4 class="text-center m-0 fw-bold">{{ options.maxSeconds | timerFormat}}</h4>
+        <div class="border border-secondary-subtle d-flex flex-wrap" style="height: 50px;">
+            <app-total-timer 
+            class="col-6"
+            *ngFor="let item of [].constructor(options.teamCount); let i = index;"
+            [totalTimerId]="i"
+            [color]="colors[i % colors.length]"
+            [maxSeconds]="options.maxSeconds"
+            (timerFullEvent)="timerFullEvent($event)">
+            </app-total-timer>
+        </div>
+    </div>
 </div>
