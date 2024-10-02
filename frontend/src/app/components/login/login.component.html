@@ -21,8 +21,13 @@
             </div>
 
             <div class="form-group">
-                <label for="maxSeconds">Second Limit</label>
+                <label for="maxSeconds">Time Limit (s)</label>
                 <input class="form-control" id="maxSeconds" name="maxSeconds" type="number" required [(ngModel)]="channelOptions.maxSeconds">
+            </div>
+
+            <div class="form-group">
+                <label for="holdTime">Hold Limit (ms)</label>
+                <input class="form-control" id="holdTime" name="holdTime" type="number" required [(ngModel)]="channelOptions.pressMilliseconds">
             </div>
         </div>
 

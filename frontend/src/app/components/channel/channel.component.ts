@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, OnInit, QueryList, ViewChildren, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChannelOptions } from '../../classes/channelOptions';
 import { TimerComponent } from '../timer/timer.component';
@@ -29,8 +29,11 @@ export class ChannelComponent implements OnInit {
   channelId: string = "";
   //the handled channels channel options
   options!: ChannelOptions;
+  winnerTeamId: number | null = null;
 
-  constructor(private route: ActivatedRoute, private loginService: LoginService) {}
+  constructor(private route: ActivatedRoute, 
+    private cdr: ChangeDetectorRef, 
+    private loginService: LoginService) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(pathVariables => {
@@ -40,7 +43,8 @@ export class ChannelComponent implements OnInit {
     this.route.queryParams.subscribe(queryParams => {     
       this.options = {
         teamCount: Number(queryParams['teamCount']),
-        maxSeconds: Number(queryParams['maxSeconds'])
+        maxSeconds: Number(queryParams['maxSeconds']),
+        pressMilliseconds: Number(queryParams['pressMilliseconds'])
       }
     });
 
@@ -50,37 +54,19 @@ export class ChannelComponent implements OnInit {
     });
   }
 
-  startTimerEvent(timerId: number) {
-    //stop all inactive timers of the client where it was activated
-    let inactiveTimers = this.localTimers.filter((x, i) => i != timerId);
-    for(let inactiveTimer of inactiveTimers) {
-      inactiveTimer.isRunning = false;
-    }
-
-    let activeTimer = this.localTimers.get(timerId);
-
-    //start the clients timer if it is not running
-    if(activeTimer!.isRunning === false) {
-      activeTimer!.isRunning = true;
-
-      //broadcast a message to the server to update all clients
-      if(!this.channel) return;
-      this.channel.publish('start-timer', { 
-        timerId: timerId,
-        secondsPassed: activeTimer!.secondsPassed
-      });
-    }
-  }
-
   handleBroadcastMessage(msg: Types.Message) {
+    //handles broadcasted messages
+    //this gets executed on all clients
     if(msg.name === 'start-timer') {
       let timerId: number = msg.data.timerId!;
-      let secondsPassed: number = msg.data.secondsPassed!;
+      let firstUpdate: boolean = msg.data.firstUpdate!;
       
+      //manage total timers on all clients
       let currentTotalTimer = this.totalTimers.get(timerId);
       currentTotalTimer!.increment++;
-
-      this.totalTimers.filter((x, i) => i != timerId).forEach(timer => timer.increment = (timer.increment <= 0 ? 0 : timer.increment - 1));
+      if(!firstUpdate) {
+        this.totalTimers.filter((x, i) => i != timerId).forEach(timer => timer.increment = (timer.increment <= 0 ? 0 : timer.increment - 1));
+      }
 
       if(!this.totalTimerInterval) {
         this.totalTimerInterval = setInterval(() => {
@@ -89,12 +75,6 @@ export class ChannelComponent implements OnInit {
           });
         }, 1000);
       }
-
-      //interval needs to be started for correct timerSum
-      /*let interval = setInterval(() => {
-        this.timerSums[activeTimerId]++;
-      }, 1000);
-      this.timerIntervals[activeTimerId] = interval;*/
     } else if(msg.name === 'game-over') {
       let timerId: number = msg.data.fullTimerId;
       
@@ -104,13 +84,54 @@ export class ChannelComponent implements OnInit {
     }
   }
 
+  startTimerEvent(timerId: number) {
+    //stop all inactive timers of the client where it was activated
+    //only gets executed on the client, where a timer was started
+    let activeTimer = this.localTimers.get(timerId);
+
+    if(activeTimer!.isRunning === false) {
+      //stop clients timers that have not been started
+      let inactiveTimers = this.localTimers.filter((x, i) => i != timerId);
+      for(let inactiveTimer of inactiveTimers) {
+        inactiveTimer.isRunning = false;
+      }
+
+      //if all timers are on 0 (ie this is the first timer press)
+      let firstUpdate: boolean = this.localTimers.filter(timer => timer.secondsPassed > 0).length === 0;
+
+      //start clients timer that has been started
+      activeTimer!.isRunning = true;
+
+      //broadcast a message to the server to update all clients
+      if(!this.channel) return;
+      this.channel.publish('start-timer', { 
+        timerId: timerId,
+        firstUpdate: firstUpdate
+      });
+    }
+  }
+
+  //this event gets triggered when a total timer bar is full
+  //this should always happen on all clients simultaniously
   timerFullEvent(totalTimerId: number) {
+    if(this.winnerTeamId != null) return;
+
     if(this.totalTimerInterval) clearInterval(this.totalTimerInterval);
 
-    if(this.channel) {
+    this.localTimers.forEach(timer => timer.isRunning = false);
+  
+    this.winnerTeamId = totalTimerId;
+    this.cdr.detectChanges();
+
+    let audio = new Audio();
+    audio.src = "../../assets/game-over.mp3";
+    audio.load();
+    audio.play();
+
+    /*if(this.channel) {
       this.channel.publish('game-over', {
         fullTimerId: totalTimerId
       });
-    }
+    }*/
   }
 }

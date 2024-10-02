@@ -25,4 +25,9 @@
             </app-total-timer>
         </div>
     </div>
+
+    <div *ngIf="winnerTeamId != null">
+        <h4 class="text-center">Game Over!</h4>
+        <p class="text-center">Team {{winnerTeamId + 1}} won!</p>
+    </div>
 </div>

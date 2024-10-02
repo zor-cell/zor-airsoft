@@ -16,7 +16,8 @@ export class LoginComponent {
   joinChannelId: string = "";
   channelOptions: ChannelOptions = {
     teamCount: 2, 
-    maxSeconds: 30
+    maxSeconds: 30,
+    pressMilliseconds: 2000
   };
 
   constructor(private toastr: ToastrService, 
@@ -38,6 +39,8 @@ export class LoginComponent {
       let hostMessage = messages.find(x => x.clientId === 'host');
 
       if(hostMessage === undefined) {
+        channel.detach();
+
         this.toastr.error(`Could not join channel ${channel.name}`);
       } else {
         this.router.navigate(['/channels/', this.joinChannelId], {queryParams: hostMessage.data});

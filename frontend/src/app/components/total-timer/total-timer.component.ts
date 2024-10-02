@@ -16,6 +16,9 @@ export class TotalTimerComponent {
 
   timerIsFull: boolean = false;
   secondsPassed: number = 0;
+
+  //can be seen as shared variable
+  //increment 
   increment: number = 0;
 
   get currentPercent() {

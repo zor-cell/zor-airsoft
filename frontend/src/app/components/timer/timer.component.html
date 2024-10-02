@@ -6,7 +6,11 @@
 
 <div class="h-100 d-flex justify-content-center align-items-center" 
 [ngStyle]="{'background-color': color}"
-(click)="mouseClick($event)">
+(mousedown)="onPressStart()"
+(mouseup)="onPressEnd()"
+(mouseleave)="onPressEnd()"
+(touchstart)="onPressStart()"
+(touchend)="onPressEnd()">
     <div class="d-flex flex-column gap-2">
         <h2 class="m-0 text-center">Team {{ timerId + 1 }}</h2>
         <h1 class="m-0 text-center fw-bolder">{{secondsPassed | timerFormat}}</h1>

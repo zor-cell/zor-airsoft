@@ -26,13 +26,24 @@ export class TimerComponent implements OnInit {
   @Output() activeTimerEvent = new EventEmitter<number>();
 
   interval: NodeJS.Timeout | null = null;
+  pressTimer: NodeJS.Timeout | null = null;
   secondsPassed: number = 0;
 
   constructor(private toastr: ToastrService) {}
 
   ngOnInit(): void {}
 
-  mouseClick(event: any) {
+  onPressStart() {
+    this.pressTimer = setTimeout(() => {
+      this.longPress();
+    }, this.options.pressMilliseconds);
+  }
+
+  onPressEnd() {
+    if(this.pressTimer) clearTimeout(this.pressTimer);
+  }
+
+  longPress() {
     this.activeTimerEvent.emit(this.timerId);
   }
 
