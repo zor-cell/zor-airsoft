@@ -37,6 +37,16 @@ export class TimerComponent implements OnInit {
     return this._color;
   }
 
+  get activeColor(): string {
+    const rgbaMatch = this._color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+    if (rgbaMatch) {
+      const [_, r, g, b] = rgbaMatch;
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    return this._color;
+  }
+
   @Input() timerId!: number;
   @Input() options!: ChannelOptions;
   @Output() activeTimerEvent = new EventEmitter<number>();
@@ -45,17 +55,37 @@ export class TimerComponent implements OnInit {
   pressTimer: NodeJS.Timeout | null = null;
   secondsPassed: number = 0;
 
+  backgroundSize = '100% 0%';
+  transitionEnabled = true;
+
   constructor(private toastr: ToastrService) {}
 
   ngOnInit(): void {}
 
+  private startPressTransition() {
+    if(!this.isRunning) {
+      this.transitionEnabled = true;
+      this.backgroundSize = '100% 100%';
+    }
+  }
+
+  private resetPressTransition() {
+    this.transitionEnabled = false;
+    this.backgroundSize = '100% 0%';
+  }
+
   onPressStart() {
+    this.startPressTransition();
+
     this.pressTimer = setTimeout(() => {
+      this.resetPressTransition();
       this.longPress();
     }, this.options.pressMilliseconds);
   }
 
   onPressEnd() {
+    this.resetPressTransition();
+
     if(this.pressTimer) clearTimeout(this.pressTimer);
   }
 

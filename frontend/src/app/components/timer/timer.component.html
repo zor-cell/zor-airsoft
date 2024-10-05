@@ -5,7 +5,13 @@
 <button type="button" class="btn btn-primary" (click)="publish()">Publish</button>*-->
 
 <div class="h-100 d-flex justify-content-center align-items-center" 
-[ngStyle]="{'background-color': color}"
+[ngStyle]="{
+'background-color': color, 
+'background-repeat': 'no-repeat',
+'background-size': backgroundSize,
+'background-image': 'linear-gradient(' + activeColor + ',' + activeColor + ')',
+'transition': transitionEnabled ? 'background-size ' + this.options.pressMilliseconds + 'ms' + ' linear' : 'none'
+}"
 (mousedown)="onPressStart()"
 (mouseup)="onPressEnd()"
 (mouseleave)="onPressEnd()"

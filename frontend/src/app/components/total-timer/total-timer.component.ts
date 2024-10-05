@@ -26,7 +26,7 @@ export class TotalTimerComponent implements AfterViewInit {
   @Input() maxSeconds!: number;
   @Output() timerFullEvent = new EventEmitter<number>;
 
-  @ViewChild('timeDisplay') timeDisplay!: ElementRef;
+  @ViewChild('timerDisplay') timerDisplay!: ElementRef;
   @ViewChild('timerContainer') timerContainer!: ElementRef;
   percentOffset: number = 0;
 
@@ -60,7 +60,7 @@ export class TotalTimerComponent implements AfterViewInit {
   }
 
   private updatePercentOffset(): void {
-    this.percentOffset = (this.timeDisplay.nativeElement.offsetWidth / this.ref.nativeElement.offsetWidth) * 100;
+    this.percentOffset = (this.timerDisplay.nativeElement.offsetWidth / this.ref.nativeElement.offsetWidth) * 100;
 
     this.cdr.detectChanges();
   }
