@@ -1,11 +1,11 @@
 <div class="animated-width h-100 position-relative" 
     [ngStyle]="{
-    'width.%': currentPercent,
+    'width': calcWidth,
     'background-color': color, 
     'float': totalTimerId != undefined && totalTimerId % 2 === 0 ? 'right' : 'none'
     }"
     >
-    <p class="fw-bold fs-6 m-0 position-absolute top-50 center-vertical"
-        [ngClass]="(totalTimerId != undefined && totalTimerId % 2 === 0) ? 'end-0 pe-1' : 'start-0 ps-1'">
+    <p #timeDisplay class="fw-bold fs-6 m-0 position-absolute top-50 center-vertical ps-1 pe-1"
+        [ngClass]="(totalTimerId != undefined && totalTimerId % 2 === 0) ? 'end-0' : 'start-0'">
     {{secondsPassed | timerFormat}}</p>
 </div>
